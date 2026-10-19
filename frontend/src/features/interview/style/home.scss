@@ -1,0 +1,867 @@
+@use "sass:color";
+
+// ============ Variables ============
+$bg: #0b0e14;
+$card-bg: rgba(17, 23, 34, 0.72);
+$panel-bg: #161c2b;
+$border: #232b3b;
+$border-dashed: #2f3a50;
+$text: #f3f5f9;
+$text-muted: #8b94a7;
+$accent: #ff2d78;
+$accent-soft: rgba(255, 45, 120, 0.15);
+$info-bg: #15244a;
+$info-border: #223a73;
+$info-text: #9db8f5;
+$info-icon: #4a90e2;
+
+$radius-xl: 22px;
+$radius-lg: 14px;
+$radius-md: 8px;
+$radius-sm: 5px;
+
+$font-display:
+  "Bricolage Grotesque",
+  "Inter",
+  -apple-system,
+  sans-serif;
+$font-body:
+  "Inter",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  sans-serif;
+
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+@mixin mobile {
+  @media (max-width: 860px) {
+    @content;
+  }
+}
+
+@mixin motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+// ============ Global ============
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #2b3550 $bg;
+  scrollbar-width: thin;
+}
+
+::selection {
+  background: $accent;
+  color: #fff;
+}
+
+// ============ Base ============
+.home {
+  position: relative;
+  min-height: 100vh;
+  height: auto;
+  background: $bg;
+  color: $text;
+  font-family: $font-body;
+  padding: 0 1.5rem 3rem;
+  overflow-x: clip; // page scrolls vertically, never sideways
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Ambient glow that stays put while content scrolls over it
+  &::before {
+    content: "";
+    position: fixed;
+    inset: -20% -10% auto -10%;
+    height: 80vh;
+    background:
+      radial-gradient(
+        40% 50% at 20% 30%,
+        rgba(255, 45, 120, 0.22),
+        transparent 70%
+      ),
+      radial-gradient(
+        35% 45% at 80% 20%,
+        rgba(74, 144, 226, 0.16),
+        transparent 70%
+      );
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Film grain for texture
+  &::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.home-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+// ============ Header / Hero ============
+.home-header {
+  min-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6rem 0 4rem;
+
+  h1 {
+    margin: 0 0 1.4rem;
+    font-family: $font-display;
+    font-size: clamp(2.8rem, 9vw, 7rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    background: linear-gradient(180deg, #fff 30%, #8f98ad 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-wrap: balance;
+
+    span {
+      -webkit-text-fill-color: $accent;
+      font-style: italic;
+      text-shadow: 0 0 60px rgba(255, 45, 120, 0.45);
+    }
+
+    @include motion-ok {
+      animation: hero-rise 1s $ease-out both;
+    }
+  }
+
+  h3 {
+    margin: 3rem 0 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    color: $text-muted;
+    font-family: $font-body;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+
+    // animated line pointing down toward the form
+    &::after {
+      content: "";
+      width: 1px;
+      height: 56px;
+      background: linear-gradient(to bottom, $accent, transparent);
+      transform-origin: top;
+    }
+
+    @include motion-ok {
+      animation: hero-rise 1s 0.3s $ease-out both;
+
+      &::after {
+        animation: scroll-line 1.8s ease-in-out infinite;
+      }
+    }
+  }
+
+  p {
+    max-width: 46ch;
+    margin: 0;
+    color: $text-muted;
+    font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+    line-height: 1.6;
+
+    @include motion-ok {
+      animation: hero-rise 1s 0.15s $ease-out both;
+    }
+  }
+
+  .desktop-break {
+    @include mobile {
+      display: none;
+    }
+  }
+
+  // Optional: <a class="scroll-hint">Scroll</a> under the paragraph
+  .scroll-hint {
+    margin-top: 3rem;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    color: $text-muted;
+    font-size: 0.75rem;
+    text-decoration: none;
+
+    &::after {
+      content: "";
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, $accent, transparent);
+
+      @include motion-ok {
+        animation: scroll-line 1.8s ease-in-out infinite;
+        transform-origin: top;
+      }
+    }
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes scroll-line {
+  0% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+// ============ Optional marquee strip ============
+// <div class="marquee"><div class="marquee-track"><span>…</span><span>…</span> (repeat set twice)</div></div>
+.marquee {
+  overflow: hidden;
+  margin: 0 -1.5rem 5rem;
+  padding: 1.1rem 0;
+  border-block: 1px solid $border;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 12%,
+    #000 88%,
+    transparent
+  );
+
+  .marquee-track {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    font-family: $font-display;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px #3a455e;
+
+    @include motion-ok {
+      animation: marquee 28s linear infinite;
+    }
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+// ============ Card ============
+.interview-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: $card-bg;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: $radius-xl;
+  overflow: hidden;
+  box-shadow:
+    0 40px 80px -30px rgba(0, 0, 0, 0.7),
+    0 0 120px -40px rgba(255, 45, 120, 0.25);
+
+  // Gradient hairline border
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      160deg,
+      rgba(255, 45, 120, 0.55),
+      rgba(255, 255, 255, 0.06) 40%,
+      rgba(74, 144, 226, 0.35)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+.form-conatiner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.job-section,
+.profile-section {
+  padding: 1.8rem 2rem;
+  display: flex;
+  flex-direction: column;
+
+  @include mobile {
+    padding: 1.4rem 1.25rem;
+  }
+}
+
+.job-section {
+  position: relative;
+  border-right: 1px solid $border;
+
+  @include mobile {
+    border-right: none;
+    border-bottom: 1px solid $border;
+  }
+}
+
+// ============ Section headings ============
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    font-family: $font-display;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .heading-icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    color: $accent;
+    background: $accent-soft;
+    border-radius: 50%;
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+}
+
+.profile-heading {
+  margin-bottom: 1rem;
+}
+
+// ============ Badges ============
+.badge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: $accent;
+  background: $accent-soft;
+  border: 1px solid rgba(255, 45, 120, 0.35);
+  border-radius: 999px;
+}
+
+// ============ Left column ============
+.job-description {
+  flex: 1;
+  min-height: 340px;
+  width: 100%;
+  resize: vertical;
+  padding: 1rem 1.1rem;
+  background: $panel-bg;
+  color: $text;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  outline: none;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s;
+
+  @include mobile {
+    flex: none;
+    min-height: 240px;
+  }
+
+  &::placeholder {
+    color: $text-muted;
+  }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 4px $accent-soft;
+  }
+}
+
+.char-count {
+  position: absolute;
+  right: 2.8rem;
+  bottom: 2.4rem;
+  font-size: 0.7rem;
+  color: $text-muted;
+  pointer-events: none;
+}
+
+// ============ Right column ============
+.field-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  height: 140px;
+  background: $panel-bg;
+  border: 1.5px dashed $border-dashed;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    transform 0.4s $ease-out;
+
+  &:hover,
+  &:focus-within {
+    border-color: $accent;
+    background: color.adjust($panel-bg, $lightness: 2%);
+    transform: translateY(-2px);
+  }
+
+  .upload-icon {
+    font-size: 1.5rem;
+    color: $accent;
+    line-height: 1;
+  }
+
+  .upload-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .upload-subtitle {
+    font-size: 0.72rem;
+    color: $text-muted;
+  }
+}
+
+// ============ OR divider ============
+.or-devider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 1rem 0;
+
+  span {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      $border-dashed,
+      transparent
+    );
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.72rem;
+    color: $text-muted;
+  }
+}
+
+// ============ Self description ============
+.description-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+    resize: vertical;
+    padding: 0.85rem 1rem;
+    background: $panel-bg;
+    color: $text;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    font: inherit;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    outline: none;
+    transition:
+      border-color 0.25s,
+      box-shadow 0.25s;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+
+    &:focus {
+      border-color: $accent;
+      box-shadow: 0 0 0 4px $accent-soft;
+    }
+  }
+}
+
+// ============ Info box ============
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  background: $info-bg;
+  border: 1px solid $info-border;
+  border-radius: $radius-lg;
+
+  .info-icon {
+    color: $info-icon;
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: $info-text;
+
+    strong {
+      color: $text;
+      font-weight: 700;
+    }
+  }
+}
+
+// ============ Card footer ============
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 2rem;
+  border-top: 1px solid $border;
+  background: rgba(255, 255, 255, 0.015);
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: $text-muted;
+  }
+
+  @include mobile {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    text-align: center;
+    padding: 1.1rem 1.25rem;
+  }
+}
+
+.generate-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.8rem;
+  background: linear-gradient(135deg, #ff2d78, #ff1a5e);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(255, 45, 120, 0.35);
+  transition:
+    transform 0.3s $ease-out,
+    box-shadow 0.3s;
+
+  // light sweep on hover
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 34px rgba(255, 45, 120, 0.55);
+
+    &::after {
+      transform: translateX(120%);
+      transition: transform 0.8s $ease-out;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+}
+
+// ============ Recent interview plans ============
+// (flattened: the original nested .recent-reports inside .recent-reports,
+//  which made the inner styles never match your markup)
+.recent-reports {
+  width: 100%;
+  margin: 6rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+
+  h2 {
+    margin: 0;
+    font-family: $font-display;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .reports-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .report-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 1.6rem 1.7rem;
+    background: linear-gradient(145deg, #171e2b, #111722);
+    border: 1px solid #293347;
+    border-radius: $radius-xl;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      transform 0.5s $ease-out,
+      border-color 0.3s,
+      box-shadow 0.3s;
+
+    // spotlight that grows from the corner on hover
+    &::before {
+      content: "";
+      position: absolute;
+      top: -60%;
+      right: -40%;
+      width: 80%;
+      aspect-ratio: 1;
+      background: radial-gradient(
+        circle,
+        rgba(255, 45, 120, 0.28),
+        transparent 65%
+      );
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+      transform: translateY(-6px);
+      border-color: $accent;
+      box-shadow: 0 20px 50px -10px rgba(255, 45, 120, 0.2);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    h3 {
+      margin: 0;
+      font-family: $font-display;
+      color: $text;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .report-meta {
+      margin: 0;
+      color: #98a3b8;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .match-score {
+      display: inline-flex;
+      align-items: center;
+      margin: 0;
+      padding: 0.45rem 0.8rem;
+      color: #ff4a8b;
+      background: rgba(255, 45, 120, 0.1);
+      border: 1px solid rgba(255, 45, 120, 0.2);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .score--high {
+      color: #53dfa0;
+      background: rgba(83, 223, 160, 0.1);
+      border-color: rgba(83, 223, 160, 0.2);
+    }
+
+    .score--mid {
+      color: #f6c96b;
+      background: rgba(246, 201, 107, 0.1);
+      border-color: rgba(246, 201, 107, 0.2);
+    }
+
+    .score--low {
+      color: #ff809d;
+      background: rgba(255, 128, 157, 0.1);
+      border-color: rgba(255, 128, 157, 0.2);
+    }
+  }
+
+  @media (max-width: 600px) {
+    margin-top: 4rem;
+
+    .reports-list {
+      grid-template-columns: 1fr;
+    }
+
+    .report-item {
+      padding: 1.3rem;
+    }
+  }
+}
+
+// ============ Scroll-driven reveals (progressive enhancement) ============
+// Chrome/Edge/Safari 26+. Other browsers simply show everything normally.
+@supports (animation-timeline: view()) {
+  @include motion-ok {
+    .interview-card,
+    .recent-reports h2,
+    .recent-reports .report-item {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 45%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(60px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ============ Page footer ============
+.page-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-top: 6rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid $border;
+
+  a {
+    color: $text-muted;
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover,
+    &:focus-visible {
+      color: $text;
+    }
+  }
+}
+
+// Respect reduced-motion for smooth scrolling too
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

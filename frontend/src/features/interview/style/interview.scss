@@ -1,0 +1,739 @@
+@use "sass:color";
+
+// ── Shared Variables (same theme as home.scss) ───────────────────────────────
+$bg-page: #0b0e14;
+$bg-card: #111722;
+$bg-panel: #161c2b;
+$border-color: #232b3b;
+$text-primary: #f3f5f9;
+$text-muted: #8b94a7;
+$accent: #ff2d78;
+
+$severity-high: #ff4d4d;
+$severity-medium: #f5a623;
+$severity-low: #3fb950;
+
+$radius-xl: 22px;
+$radius-lg: 14px;
+$radius-md: 10px;
+
+$font-display:
+  "Bricolage Grotesque",
+  "Inter",
+  -apple-system,
+  sans-serif;
+$font-stack:
+  "Inter",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  sans-serif;
+
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+@function tint($c, $a) {
+  @return color.change($c, $alpha: $a);
+}
+
+@mixin narrow {
+  @media (max-width: 1000px) {
+    @content;
+  }
+}
+
+@mixin motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+// ── Global ───────────────────────────────────────────────────────────────────
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #2b3550 $bg-page;
+  scrollbar-width: thin;
+}
+
+::selection {
+  background: $accent;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+// ── Page Shell ───────────────────────────────────────────────────────────────
+.interview-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: $bg-page;
+  color: $text-primary;
+  font-family: $font-stack;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow-x: clip;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Film grain
+  &::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// ── 3-Column Layout ──────────────────────────────────────────────────────────
+// No overflow set here on purpose: the page itself scrolls, and the side
+// columns stay in view with position: sticky.
+.interview-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  background-color: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $radius-xl;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
+
+  @include narrow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.interview-divider {
+  align-self: stretch;
+  width: 1px;
+  background-color: $border-color;
+  flex-shrink: 0;
+
+  @include narrow {
+    width: 100%;
+    height: 1px;
+  }
+}
+
+// ── Left Nav ─────────────────────────────────────────────────────────────────
+.interview-nav {
+  position: sticky;
+  top: 1.5rem;
+  width: 220px;
+  flex-shrink: 0;
+  padding: 1.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  height: calc(
+    100vh - 3rem
+  ); // fills the screen so the button can sit at the bottom
+
+  // Last item in the nav (the Download Resume button) goes to the bottom
+  > :last-child:not(:first-child) {
+    margin-top: auto;
+  }
+
+  @include narrow {
+    position: static;
+    width: 100%;
+    height: auto;
+    padding: 1.25rem 1rem;
+
+    > :last-child:not(:first-child) {
+      margin-top: 1rem;
+    }
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $text-muted;
+    padding: 0 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    background: none;
+    border: none;
+    border-radius: 999px;
+    color: $text-muted;
+    font-family: $font-stack;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-align: left;
+    transition:
+      background-color 0.25s,
+      color 0.25s,
+      transform 0.3s $ease-out;
+
+    &:hover {
+      background-color: $bg-panel;
+      color: $text-primary;
+      transform: translateX(3px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background-color: tint($accent, 0.12);
+      color: $accent;
+
+      .interview-nav__icon svg {
+        stroke: $accent;
+      }
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+}
+
+// ── Center Content ───────────────────────────────────────────────────────────
+// Normal page flow now: no inner scroll box, no fixed max-height.
+.interview-content {
+  flex: 1;
+  min-width: 0;
+  padding: 2rem 2.25rem 5rem;
+
+  @include narrow {
+    padding: 1.5rem 1.25rem 3rem;
+  }
+
+  section {
+    min-height: 60vh;
+  }
+}
+
+.content-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid $border-color;
+
+  h2 {
+    margin: 0;
+    font-family: $font-display;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    color: $text-primary;
+  }
+
+  &__count {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $accent;
+    background-color: tint($accent, 0.12);
+    padding: 0.18rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid tint($accent, 0.3);
+  }
+}
+
+// ── Question Cards ───────────────────────────────────────────────────────────
+.q-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.q-card {
+  position: relative;
+  background-color: $bg-panel;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition:
+    border-color 0.3s,
+    transform 0.5s $ease-out,
+    box-shadow 0.3s;
+
+  // spotlight that appears on hover
+  &::before {
+    content: "";
+    position: absolute;
+    top: -70%;
+    right: -30%;
+    width: 60%;
+    aspect-ratio: 1;
+    background: radial-gradient(circle, tint($accent, 0.22), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: tint($accent, 0.6);
+    box-shadow: 0 18px 40px -16px tint($accent, 0.25);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &__header {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.05rem 1.2rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  &__index {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $accent;
+    background-color: tint($accent, 0.12);
+    border: 1px solid tint($accent, 0.28);
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    margin-top: 2px;
+  }
+
+  &__question {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: $text-primary;
+    line-height: 1.55;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    color: $text-muted;
+    transition:
+      transform 0.35s $ease-out,
+      color 0.2s;
+    margin-top: 2px;
+
+    &--open {
+      transform: rotate(180deg);
+      color: $accent;
+    }
+  }
+
+  &__body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 0.9rem 1.2rem 1.2rem;
+    border-top: 1px solid $border-color;
+
+    @include motion-ok {
+      animation: body-open 0.4s $ease-out both;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+
+    p {
+      margin: 0;
+      font-size: 0.86rem;
+      color: color.adjust($text-muted, $lightness: 15%);
+      line-height: 1.65;
+    }
+  }
+
+  &__tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.18rem 0.65rem;
+    border-radius: 999px;
+    width: fit-content;
+
+    &--intention {
+      color: #a78bfa;
+      background-color: tint(#a78bfa, 0.12);
+      border: 1px solid tint(#a78bfa, 0.28);
+    }
+
+    &--answer {
+      color: $severity-low;
+      background-color: tint($severity-low, 0.12);
+      border: 1px solid tint($severity-low, 0.28);
+    }
+  }
+}
+
+@keyframes body-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// ── Road Map ─────────────────────────────────────────────────────────────────
+.roadmap-list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  // vertical timeline line
+  &::before {
+    content: "";
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, $accent, tint($accent, 0.05));
+    border-radius: 1px;
+  }
+}
+
+.roadmap-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.9rem 0 0.9rem 3.5rem;
+  position: relative;
+
+  // dot on timeline
+  &::before {
+    content: "";
+    position: absolute;
+    left: 21px;
+    top: 1.25rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: $bg-page;
+    border: 2px solid $accent;
+    box-shadow: 0 0 14px tint($accent, 0.55);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  &__badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: $accent;
+    background-color: tint($accent, 0.12);
+    border: 1px solid tint($accent, 0.3);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  &__focus {
+    margin: 0;
+    font-family: $font-display;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: $text-primary;
+  }
+
+  &__tasks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.875rem;
+      color: color.adjust($text-muted, $lightness: 12%);
+      line-height: 1.55;
+    }
+  }
+
+  &__bullet {
+    flex-shrink: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: $accent;
+    margin-top: 8px;
+  }
+}
+
+// ── Right Sidebar ────────────────────────────────────────────────────────────
+.interview-sidebar {
+  position: sticky;
+  top: 1.5rem;
+  width: 250px;
+  flex-shrink: 0;
+  padding: 1.75rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  max-height: calc(100vh - 3rem);
+
+  @include narrow {
+    position: static;
+    width: 100%;
+    max-height: none;
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, $border-color, transparent);
+}
+
+// Match Score
+.match-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+
+  &__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $text-muted;
+    margin: 0;
+    align-self: flex-start;
+  }
+
+  &__ring {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid;
+    background: tint($bg-page, 0.5);
+
+    &.score--high {
+      border-color: $severity-low;
+      box-shadow: 0 0 36px -6px tint($severity-low, 0.55);
+    }
+
+    &.score--mid {
+      border-color: $severity-medium;
+      box-shadow: 0 0 36px -6px tint($severity-medium, 0.55);
+    }
+
+    &.score--low {
+      border-color: $severity-high;
+      box-shadow: 0 0 36px -6px tint($severity-high, 0.55);
+    }
+  }
+
+  &__value {
+    font-family: $font-display;
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: $text-primary;
+    line-height: 1;
+  }
+
+  &__pct {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-top: -2px;
+  }
+
+  &__sub {
+    margin: 0;
+    font-size: 0.78rem;
+    color: $severity-low;
+    text-align: center;
+  }
+}
+
+// Skill Gaps
+.skill-gaps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  &__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: $text-muted;
+    margin: 0;
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+.skill-tag {
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.32rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid;
+  cursor: default;
+
+  &--high {
+    color: $severity-high;
+    background-color: tint($severity-high, 0.1);
+    border-color: tint($severity-high, 0.28);
+  }
+
+  &--medium {
+    color: $severity-medium;
+    background-color: tint($severity-medium, 0.1);
+    border-color: tint($severity-medium, 0.28);
+  }
+
+  &--low {
+    color: $severity-low;
+    background-color: tint($severity-low, 0.1);
+    border-color: tint($severity-low, 0.28);
+  }
+}
+
+// ── Scroll-driven reveals (progressive enhancement) ──────────────────────────
+@supports (animation-timeline: view()) {
+  @include motion-ok {
+    .q-card,
+    .roadmap-day {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+$bg: #0b0e14;
+$border: #232b3b;
+$text: #f3f5f9;
+$text-muted: #8b94a7;
+$accent: #ff2d78;
+
+$font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+.loading-screen {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+  background: $bg;
+  color: $text;
+  font-family: $font-body;
+  text-align: center;
+
+  h1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 0;
+    max-width: 22ch;
+    font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+
+    // Spinner: drawn with ::before, so no extra markup is needed
+    &::before {
+      content: "";
+      width: 46px;
+      height: 46px;
+      border: 3px solid $border;
+      border-top-color: $accent;
+      border-radius: 50%;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: loading-pulse 2s ease-in-out infinite;
+
+      &::before {
+        animation: loading-spin 0.9s linear infinite;
+      }
+    }
+  }
+
+  // Optional sub-line: <p>This usually takes a few seconds.</p> under the h1
+  p {
+    margin: 0;
+    color: $text-muted;
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}

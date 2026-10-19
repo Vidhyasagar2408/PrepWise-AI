@@ -1,0 +1,75 @@
+@use "sass:color";
+
+$accent: #ff2d78; // swap to #cdea68 (and text color to black) to keep lime
+$ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+.button {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex; // also works if .button is an <a>
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  gap: 0.5rem;
+  border: none;
+  padding-inline: 1.8rem;
+  padding-block: 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  transition:
+    transform 0.3s $ease-out,
+    box-shadow 0.3s,
+    opacity 0.2s;
+
+  &.primary-button {
+    margin-top: 0.5rem;
+    background: linear-gradient(135deg, #ff2d78, #ff1a5e);
+    box-shadow: 0 8px 24px rgba(255, 45, 120, 0.35);
+
+    // light sweep on hover
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        110deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.35) 50%,
+        transparent 70%
+      );
+      transform: translateX(-120%);
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 34px rgba(255, 45, 120, 0.55);
+
+      &::after {
+        transform: translateX(120%);
+        transition: transform 0.8s $ease-out;
+      }
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
