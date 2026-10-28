@@ -15,7 +15,18 @@ const Protected = ({ children }) => {
           backgroundColor: "#f5f5f5",
         }}
       >
-        <h1>Loading....</h1>
+        <h1
+          style={{
+            fontSize: "32px",
+            fontWeight: "700",
+            color: "#2563eb",
+            letterSpacing: "2px",
+            textAlign: "center",
+            textShadow: "0 2px 8px rgba(37, 99, 235, 0.2)",
+          }}
+        >
+          Loading....
+        </h1>
       </main>
     );
   }
