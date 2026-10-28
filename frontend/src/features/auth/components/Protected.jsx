@@ -6,7 +6,15 @@ const Protected = ({ children }) => {
 
   if (loading) {
     return (
-      <main>
+      <main
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
         <h1>Loading....</h1>
       </main>
     );
