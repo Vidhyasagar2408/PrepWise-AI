@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -54,8 +54,12 @@ export const getAllInterviewReports = async () => {
  */
 
 export const generateResumePdf = async (interviewReportId) => {
-  const response = await api.post(`/api/interview/resume/pdf/${interviewReportId}`, null, {
-    responseType: "blob", // Important for handling binary data
-  });
+  const response = await api.post(
+    `/api/interview/resume/pdf/${interviewReportId}`,
+    null,
+    {
+      responseType: "blob", // Important for handling binary data
+    },
+  );
   return response.data;
 };
